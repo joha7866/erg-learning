@@ -38,9 +38,10 @@ sys = ss(A,B,C,D);
 % Reference
 %
 r0 = zeros(2,1);
-r = [11;9.9];
+r = [3;6];
 
 v0 = r0;
+Kappa = 100;
 
 
 %
@@ -60,22 +61,20 @@ Kd = 2*zeta*wn;
 %
 % Nav Fields
 %
-%constraint
-constr_A = [1,0,0,0;
-            -1,0,0,0;
-            0,1,0,0;
-            0,-1,0,0;
-            0,0,0,0;
-            0,0,0,0;
-            0,0,0,0;
-            0,0,0,0;];
-constr_B = zeros(8,2);
-constr = [10;10;0;0;0;0;0;0];
+%constraint Av+b>=0
+constr.A = [1,0;
+            -1,0;
+            0,1;
+            0,-1;
+            -1,-1];
+constr.b = [10;10;10;10;4];
+
 
 
 zeta = 2;
-delta = 1;
-eta = delta;
+delta = 0;
+eta = 1;
+
 
 %
 % sim
@@ -88,6 +87,7 @@ u1 = out.u.Data(1,:);
 u2 = out.u.Data(2,:);
 x = out.x.Data(1,:)';
 y = out.x.Data(2,:)';
+v = out.v.Data;
 
 figure
 plot(tu,u1)
@@ -98,17 +98,39 @@ grid on
 title('Control Inputs')
 
 figure
-scatter(x,y,[],t)
-xlabel('time')
-ylabel('x pos')
-zlabel('y pos')
+% scatter(x,y,[],t,'.')
+% scatter(v(1,:),v(2,:),[],t,'.')
+plot(v(1,:),v(2,:))
+axis([0,10,0,10])
+xlabel('x pos')
+ylabel('y pos')
 grid on
-xline(constr(1),'r--')
-xline(constr(1)-delta,'y--')
-xline(constr(1)-zeta,'g--')
-yline(constr(2),'r--')
-yline(constr(2)-delta,'y--')
-yline(constr(2)-zeta,'g--')
-title('X,Y Coords')
+xline(10,'r--')
+xline(10-delta,'y--')
+xline(10-zeta,'g--')
+yline(10,'r--')
+yline(10-delta,'y--')
+yline(10-zeta,'g--')
+line([4;0],[0;4],'linestyle','--','color','r')
+line([4;0],[0;4],'linestyle','--','color','r')
+title('v')
+
+r
+[x(end) y(end)]
+[v(1,end) v(2,end)]
+
+
+return
+
+% %
+% % symplectic euler
+% %
+% x0 = 0;
+% dx0 = 0;
+% eul.x = [x0];
+% eul.dx = [dx0];
+% for k = 1:10
+%     eul.x(:,k) = 
+% end
 
 
